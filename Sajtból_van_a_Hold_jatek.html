@@ -1,52 +1,62 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Miért nézik vágyakozva az egerek a Holdat?</title>
 <style>
-  :root{
-    --ink:#2b2100; --panel:#ffffff; --accent:#ffd54f; --muted:#6b7280;
-  }
+  :root{ --ink:#2b2100; --muted:#6b7280; --accent:#ffd54f; }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; font-family:"Comic Sans MS", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    color:var(--ink); background:#f2f3f6;
-    /* a háttérképet JS-ből állítjuk be -> cover + fixed */
-    background-position:center; background-size:cover; background-attachment:fixed; background-repeat:no-repeat;
+    margin:0; font-family:"Comic Sans MS",system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink); background:#f3f4f6; overflow-x:hidden; text-align:center;
   }
-  .wrap{min-height:100vh; display:grid; place-items:center; padding:24px}
+
+  /* Stabil háttér: valódi <img> */
+  #bg{
+    position:fixed; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center top; z-index:-1;
+    filter:brightness(.92);
+  }
+
+  .wrap{min-height:100vh; display:grid; place-items:center; padding:18px}
   .panel{
-    width:min(560px,92vw);
-    background:rgba(255,255,255,.94);
-    border:1px solid #ececf3; border-radius:22px;
-    box-shadow:0 14px 40px rgba(0,0,0,.12);
-    padding:22px 26px; text-align:center;
+    width:min(680px,94vw); background:rgba(255,255,255,.94);
+    border:1px solid #ececf3; border-radius:22px; box-shadow:0 14px 38px rgba(0,0,0,.12);
+    padding:22px 26px;
   }
-  h1{margin:0 0 8px; font-size:28px; text-shadow:0 1px 0 #fff}
-  h2{margin:6px 0 14px; font-size:26px}
-  #q{font-size:36px; font-weight:900; letter-spacing:.5px; margin:10px 0 12px}
+
+  h1{margin:0 0 6px; font-size:30px; text-shadow:0 1px 0 #fff}
+  h2{margin:8px 0 14px; font-size:26px}
+  #q{font-size:38px; font-weight:900; letter-spacing:.4px; margin:10px 0 12px}
+
   .muted{color:var(--muted)}
   .btn{
-    display:inline-block; border:none; border-radius:14px; padding:14px 22px;
+    border:none; border-radius:14px; padding:14px 22px;
     background:var(--accent); color:#2b2100; font-weight:800; font-size:22px; cursor:pointer;
     box-shadow:0 4px 10px rgba(0,0,0,.18); transition:transform .08s;
   }
   .btn:active{transform:scale(.98)}
+
   input[type="text"]{
-    width:260px; height:56px; border-radius:12px; border:2px solid #c9b46a;
-    font-size:26px; text-align:center; color:#1b1400; background:#fff;
+    width:320px; height:64px; border-radius:12px; border:2px solid #c9b46a;
+    font-size:28px; text-align:center; color:#1b1400; background:#fff;
     box-shadow:inset 0 2px 6px rgba(0,0,0,.08);
   }
-  #feedback{min-height:1.6em; font-size:18px; font-weight:800}
-  #progress{font-size:14px; color:#555}
-  #cheeses{position:fixed; top:10px; right:12px; font-size:32px; text-shadow:0 2px 6px rgba(0,0,0,.25)}
-  @keyframes glow{0%{filter:brightness(.75)}100%{filter:brightness(1)}}
+  #feedback{min-height:1.8em; font-size:18px; font-weight:800}
+  #progress{font-size:15px; color:#555}
+
+  #cheeses{position:fixed; top:10px; right:12px; font-size:34px; text-shadow:0 2px 6px rgba(0,0,0,.25)}
+  @keyframes glow{0%{filter:brightness(.78)}100%{filter:brightness(1)}}
   img.endpic{width:min(920px,92vw); border-radius:18px; box-shadow:0 12px 30px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
+
+<!-- Háttérkép -->
+<img id="bg" src="./mouse-9484204_1280.webp" alt="Egerek a barlangban">
+
 <div id="cheeses">🧀🧀🧀</div>
 
 <div class="wrap">
@@ -61,7 +71,7 @@
   <div id="game" class="panel" style="display:none">
     <h2 id="roomTitle"></h2>
     <div id="q">—</div>
-    <input id="a" type="text" inputmode="numeric" autocomplete="off" />
+    <input id="a" type="text" inputmode="numeric" autocomplete="off">
     <div style="height:12px"></div>
     <button class="btn" id="checkBtn">Ellenőrzés</button>
     <div id="feedback" class="muted"></div>
@@ -72,30 +82,22 @@
   <div id="end" class="panel" style="display:none">
     <h2>Megszerezted az összes sajtot! 🧀🌕</h2>
     <p>Most már tudod: <strong>a Hold sajtból van!</strong></p>
-    <img class="endpic" src="d9c95b55-7ff7-4abb-8416-8278889d917a.jpg" alt="Egerek a Holdnál">
+    <img class="endpic" src="./d9c95b55-7ff7-4abb-8416-8278889d917a.jpg" alt="Egerek a Holdnál">
     <div style="height:10px"></div>
-    <audio id="song" src="sajtból_van_a_hold.mp3"></audio>
+    <audio id="song" src="./sajtból_van_a_hold.mp3"></audio>
     <div style="height:10px"></div>
     <button class="btn" id="againBtn">Újrakezdem</button>
   </div>
 </div>
 
 <script>
-/* ---------- Háttérképek (szobaenként) ---------- */
-const BG1 = "mouse-9484204_1280.webp"; // helyi kép
-const BG2 = "https://media.giphy.com/media/11s7Ke7jcNxCHS/giphy.gif"; // vicces egér GIF
-const BG3 = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"; // éjszakai GIF
-const BG_FALLBACK = BG1; // ha a GIF nem tölthető, erre esik vissza
+/* --------- Helyi képek szobánként --------- */
+const BG1 = "./mouse-9484204_1280.webp";                          // 1. szoba – barlang
+const BG2 = "./966f1a08-bbe8-490f-9151-5d38fbe23e91.jpg";         // 2. szoba – cukiegér
+const BG3 = "./4900.jpg";                                         // 3. szoba – lámpás egér
+const END_BG = "./d9c95b55-7ff7-4abb-8416-8278889d917a.jpg";
 
-function setBg(url){
-  // ha a hálózat tiltja a giphy-t, fallback a helyi képre
-  const img = new Image();
-  img.onload = ()=> document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,.12), rgba(0,0,0,.12)), url('${url}')`;
-  img.onerror = ()=> document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,.12), rgba(0,0,0,.12)), url('${BG_FALLBACK}')`;
-  img.src = url;
-}
-
-/* ---------- 3 szoba × 10 feladat ---------- */
+/* --------- 3 szoba × 10 feladat --------- */
 const rooms = [
   { name:"1. szoba – Szorzás", bg:BG1, tasks:[
     ["2×3","6"],["4×2","8"],["5×4","20"],["6×3","18"],["9×4","36"],
@@ -116,11 +118,10 @@ const $ = id => document.getElementById(id);
 const UI = { start:$("#start"), game:$("#game"), end:$("#end"),
              roomTitle:$("#roomTitle"), q:$("#q"), a:$("#a"),
              feedback:$("#feedback"), progress:$("#progress"),
-             song:$("#song") };
+             song:$("#song"), bg:$("#bg") };
 
 let roomIndex=0, taskIndex=0, cheese=0;
 
-/* ---------- Folyamat ---------- */
 function startGame(){
   UI.start.style.display="none";
   UI.game.style.display="block";
@@ -130,12 +131,13 @@ function startGame(){
   render();
 }
 
+function setBg(src){ UI.bg.src = src; }
+
 function render(){
   const R = rooms[roomIndex];
   UI.roomTitle.textContent = R.name;
   UI.q.textContent = R.tasks[taskIndex][0];
-  UI.a.value = "";
-  UI.a.focus();
+  UI.a.value = ""; UI.a.focus();
   UI.feedback.textContent = "";
   UI.progress.textContent = `Feladat: ${taskIndex+1}/10 · Szoba: ${roomIndex+1}/3`;
 }
@@ -150,13 +152,10 @@ function check(){
     if(taskIndex < R.tasks.length){
       setTimeout(render, 500);
     } else {
-      cheese++;
-      updateCheese();
+      cheese++; updateCheese();
       if(roomIndex < rooms.length-1){
         alert(`Megszereztél egy sajtot! (${cheese}/3)`);
-        roomIndex++; taskIndex=0;
-        setBg(rooms[roomIndex].bg);
-        render();
+        roomIndex++; taskIndex=0; setBg(rooms[roomIndex].bg); render();
       } else {
         finishGame();
       }
@@ -167,18 +166,14 @@ function check(){
 }
 
 function updateCheese(){
-  const full = "🧀".repeat(cheese);
-  const empty = "🧀".repeat(3-cheese);
-  $("#cheeses").textContent = full + empty;
+  $("#cheeses").textContent = "🧀".repeat(cheese) + "🧀".repeat(3-cheese);
 }
 
 function finishGame(){
   UI.game.style.display="none";
   UI.end.style.display="block";
-  // végső háttér + animáció
-  setBg("d9c95b55-7ff7-4abb-8416-8278889d917a.jpg");
-  document.body.style.animation = "glow 6s ease-in-out infinite alternate";
-  // zene
+  UI.bg.src = END_BG;                       // záró háttér
+  UI.bg.style.animation = "glow 6s ease-in-out infinite alternate";
   UI.song.currentTime = 0;
   const tryPlay = ()=> UI.song.play().catch(()=>{});
   tryPlay(); setTimeout(tryPlay,400); setTimeout(tryPlay,1200);
@@ -186,13 +181,12 @@ function finishGame(){
 
 function reset(){ location.reload(); }
 
-/* ---------- Események ---------- */
 $("#startBtn").addEventListener("click", startGame);
 $("#checkBtn").addEventListener("click", check);
 $("#againBtn").addEventListener("click", reset);
 $("#a").addEventListener("keydown", e=>{ if(e.key==="Enter") check(); });
 
-/* kezdő háttér azonnal */
+// kezdő háttér
 setBg(BG1);
 </script>
 </body>
