@@ -1,271 +1,200 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Miért nézik vágyakozva az egerek a Holdat?</title>
 <style>
-  :root{
-    --ink:#111827; --muted:#6b7280; --panel:#ffffff; --bg:#f6f7fb;
-    --red:#ee2e31; --blue:#2563eb; --yellow:#f59e0b; --green:#16a34a;
-  }
+  :root{ --ink:#2b2100; --muted:#6b7280; --accent:#ffd54f; }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0; font-family:Inter, system-ui, Segoe UI, Roboto, Arial, "Comic Sans MS", sans-serif; background:var(--bg); color:var(--ink)}
+  body{
+    margin:0; font-family:"Comic Sans MS",system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink); background:#f3f4f6; overflow-x:hidden; text-align:center;
+  }
+
+  /* Stabil háttér: valódi <img> */
+  #bg{
+    position:fixed; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center top; z-index:-1;
+    filter:brightness(.92);
+  }
+
   .wrap{min-height:100vh; display:grid; place-items:center; padding:18px}
-  .card{width:min(980px,96vw); background:var(--panel); border-radius:20px; padding:24px; box-shadow:0 14px 48px rgba(0,0,0,.08); border:1px solid #ececf3; position:relative; overflow:hidden}
+  .panel{
+    width:min(680px,94vw); background:rgba(255,255,255,.94);
+    border:1px solid #ececf3; border-radius:22px; box-shadow:0 14px 38px rgba(0,0,0,.12);
+    padding:22px 26px;
+  }
 
-  .top{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
-  .title{font-weight:900}
-  .spacer{flex:1}
-  .chip{font-weight:800; font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid #e9e9ef; background:#fafafa}
+  h1{margin:0 0 6px; font-size:30px; text-shadow:0 1px 0 #fff}
+  h2{margin:8px 0 14px; font-size:26px}
+  #q{font-size:38px; font-weight:900; letter-spacing:.4px; margin:10px 0 12px}
 
-  hr{border:none; height:1px; background:#ececf3; margin:14px 0 16px}
+  .muted{color:var(--muted)}
+  .btn{
+    border:none; border-radius:14px; padding:14px 22px;
+    background:var(--accent); color:#2b2100; font-weight:800; font-size:22px; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,.18); transition:transform .08s;
+  }
+  .btn:active{transform:scale(.98)}
 
-  .center{display:grid; place-items:center; text-align:center; padding:20px}
-  .btn{border:none; border-radius:14px; padding:12px 16px; font-weight:900; cursor:pointer; background:#111827; color:#fff}
-  .btn.alt{background:#ffd54f; color:#333}
+  input[type="text"]{
+    width:320px; height:64px; border-radius:12px; border:2px solid #c9b46a;
+    font-size:28px; text-align:center; color:#1b1400; background:#fff;
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.08);
+  }
+  #feedback{min-height:1.8em; font-size:18px; font-weight:800}
+  #progress{font-size:15px; color:#555}
 
-  .barWrap{height:8px; background:#eef0f5; border-radius:999px; overflow:hidden}
-  .bar{height:100%; width:0%; background:linear-gradient(90deg,#8b5cf6,#22d3ee)}
-  .qcard{background:#fff; border:1px solid #ededf4; border-radius:16px; padding:16px 18px; margin:10px 0 14px; display:flex; align-items:center; gap:10px}
-  .qnum{font-weight:900; font-size:13px; background:#f3f4f6; border:1px solid #e6e8ec; border-radius:12px; padding:6px 10px}
-  .qtext{font-weight:900; font-size:22px}
-  .grid{display:grid; grid-template-columns:repeat(2,minmax(220px,1fr)); gap:12px}
-  .ans{border:none; border-radius:16px; color:#fff; font-weight:900; font-size:18px; padding:18px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; justify-content:center; min-height:70px; transition:transform .08s}
-  .ans:active{transform:scale(.99)}
-  .red{background:var(--red)} .blue{background:var(--blue)} .yellow{background:var(--yellow)} .green{background:var(--green)}
-  .icon{font-size:18px; filter:drop-shadow(0 1px 0 rgba(0,0,0,.15))}
-  .foot{display:flex; align-items:center; justify-content:space-between; margin-top:8px}
-  .muted{color:var(--muted); font-size:13px}
-  @media (max-width:640px){ .grid{grid-template-columns:1fr} .qtext{font-size:19px} }
-
-  /* Intro és Summary hátterek IMG-ként — biztos betöltődés Pages-en */
-  .bgimg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-1}
-  .shade{position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.18)); z-index:-1}
-
-  /* Summary: pulzáló holdfény + gépelős (typewriter) felirat */
-  @keyframes glow{0%{filter:brightness(.65)}100%{filter:brightness(.85)}}
-  .type{font-weight:900; color:#fff; text-shadow:0 0 16px rgba(0,0,0,.6); white-space:pre-wrap}
-  .cursor{display:inline-block; width:10px; background:#fff; margin-left:2px; animation:blink 1.1s step-end infinite}
-  @keyframes blink{50%{background:transparent}}
+  #cheeses{position:fixed; top:10px; right:12px; font-size:34px; text-shadow:0 2px 6px rgba(0,0,0,.25)}
+  @keyframes glow{0%{filter:brightness(.78)}100%{filter:brightness(1)}}
+  img.endpic{width:min(920px,92vw); border-radius:18px; box-shadow:0 12px 30px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
+
+<!-- Háttérkép -->
+<img id="bg"
+     src="https://kicsicsikar.github.io/Egeres_jatek/mouse-9484204_1280.webp"
+     alt="Egerek a barlangban">
+
+<div id="cheeses">🧀🧀🧀</div>
+
 <div class="wrap">
-  <div class="card">
+  <!-- START -->
+  <div id="start" class="panel">
+    <h1>Miért nézik vágyakozva az egerek a Holdat?</h1>
+    <p class="muted">Ha túljutsz mindhárom szobán, megtudod a választ! 🧀</p>
+    <button class="btn" id="startBtn">Indulás</button>
+  </div>
 
-    <!-- FEJLÉC -->
-    <div class="top">
-      <div class="title">🐭 Miért nézik vágyakozva az egerek a Holdat?</div>
-      <div class="spacer"></div>
-      <div class="chip" id="room">1/3 · Szorzás</div>
-      <div class="chip">Sajtdarabok: <span id="cheese">0</span>/3</div>
-      <div class="chip">Életek: <span id="lives">❤️❤️❤️</span></div>
-    </div>
+  <!-- GAME -->
+  <div id="game" class="panel" style="display:none">
+    <h2 id="roomTitle"></h2>
+    <div id="q">—</div>
+    <input id="a" type="text" inputmode="numeric" autocomplete="off">
+    <div style="height:12px"></div>
+    <button class="btn" id="checkBtn">Ellenőrzés</button>
+    <div id="feedback" class="muted"></div>
+    <div id="progress" class="muted"></div>
+  </div>
 
-    <hr>
-
-    <!-- INTRO -->
-    <div id="intro" class="center" style="position:relative; overflow:hidden; border-radius:20px;">
-      <img src="mouse-9484204_1280.webp" alt="Egerek sajtbányában" class="background">
-      <div class="shade"></div>
-      <h2 style="color:#fff; text-shadow:0 0 12px rgba(0,0,0,.55); margin:0 0 8px">Miért nézik vágyakozva az egerek a Holdat?</h2>
-      <p class="muted" style="color:#f3f3f3; text-shadow:0 0 10px rgba(0,0,0,.6); max-width:720px">
-        Ha túljutottál a feladatokon, megkapod a választ!
-      </p>
-      <button class="btn" id="start">Indulás 🚀</button>
-    </div>
-
-    <!-- JÁTÉK -->
-    <div id="game" style="display:none">
-      <div class="barWrap"><div class="bar" id="bar"></div></div>
-      <div class="qcard">
-        <div class="qnum" id="qnum">1/10</div>
-        <div class="qtext" id="qtext">Kérdés…</div>
-      </div>
-      <div class="grid" id="answers"></div>
-      <div class="foot">
-        <div class="muted" id="hint">Jó válasz → továbblép • Rossz válasz → élet fogy</div>
-        <div class="muted">Pálya: <b id="step">1/10</b></div>
-      </div>
-    </div>
-
-    <!-- SAJT KÖZTES KÉPERNYŐ -->
-    <div id="cheeseScr" class="center" style="display:none">
-      <h2>Megszerezted a sajtot! (<span id="cCount">1</span>/3)</h2>
-      <button class="btn" id="nextRoom">Tovább ➜</button>
-    </div>
-
-    <!-- GAME OVER -->
-    <div id="over" class="center" style="display:none">
-      <h2>Elfogytak az életek 😿</h2>
-      <p class="muted">Semmi gond! Kezdjük elölről.</p>
-      <button class="btn" id="restart">Újrakezdés</button>
-    </div>
-
-    <!-- SUMMARY (pulzáló háttér + gépelős felirat + automatikus zene) -->
-    <div id="summary" class="center" style="display:none; position:relative; overflow:hidden; border-radius:20px;">
-      <img class="bgimg" src="./d9c95b55-7ff7-4abb-8416-8278889d917a.jpg" alt="Egerek a Hold alatt" style="animation:glow 6s ease-in-out infinite alternate; filter:brightness(.72)">
-      <h2 class="type" id="typeLine1" style="margin:26px 0 6px"></h2>
-      <p class="type" id="typeLine2" style="margin:0 0 10px; font-weight:700; opacity:.9"></p>
-
-      <audio id="song" preload="auto">
-        <source src="Sajtból van a hold (mp3cut.net)1.mp3" type="audio/mpeg">
-      </audio>
-
-      <button class="btn alt" id="again" style="margin-top:16px">Még egyszer játszom 🔁</button>
-    </div>
-
+  <!-- END -->
+  <div id="end" class="panel" style="display:none">
+    <h2>Megszerezted az összes sajtot! 🧀🌕</h2>
+    <p>Most már tudod: <strong>a Hold sajtból van!</strong></p>
+    <img class="endpic"
+         src="https://kicsicsikar.github.io/Egeres_jatek/d9c95b55-7ff7-4abb-8416-8278889d917a.jpg"
+         alt="Egerek a Holdnál">
+    <div style="height:10px"></div>
+    <audio id="song"
+           src="https://kicsicsikar.github.io/Egeres_jatek/sajtból_van_a_hold.mp3"></audio>
+    <div style="height:10px"></div>
+    <button class="btn" id="againBtn">Újrakezdem</button>
   </div>
 </div>
 
 <script>
-/* ----------- KÉRDÉSEK: 3 szoba × 10 kérdés ----------- */
-const ROOMS = [
-  {name:'Szorzás', items:[
-    ["7 × 8 = ?","56",["48","54","64"]],
-    ["9 × 6 = ?","54",["45","56","63"]],
-    ["4 × 9 = ?","36",["32","27","45"]],
-    ["8 × 5 = ?","40",["35","45","48"]],
-    ["3 × 7 = ?","21",["18","24","28"]],
-    ["2 × 9 = ?","18",["16","20","22"]],
-    ["10 × 7 = ?","70",["77","67","60"]],
-    ["6 × 8 = ?","48",["42","56","46"]],
-    ["2 × 7 = ?","14",["12","16","18"]],
-    ["5 × 9 = ?","45",["35","40","50"]],
+/* --------- Képek teljes URL-lel --------- */
+const BASE = "https://kicsicsikar.github.io/Egeres_jatek/";
+
+const BG1 = BASE + "mouse-9484204_1280.webp";                          // 1. szoba – barlang
+const BG2 = BASE + "966f1a08-bbe8-490f-9151-5d38fbe23e91.jpg";         // 2. szoba – cukiegér
+const BG3 = BASE + "4900.jpg";                                         // 3. szoba – lámpás egér
+const END_BG = BASE + "d9c95b55-7ff7-4abb-8416-8278889d917a.jpg";
+
+/* --------- 3 szoba × 10 feladat --------- */
+const rooms = [
+  { name:"1. szoba – Szorzás", bg:BG1, tasks:[
+    ["2×3","6"],["4×2","8"],["5×4","20"],["6×3","18"],["9×4","36"],
+    ["8×5","40"],["10×4","40"],["3×7","21"],["4×6","24"],["7×4","28"]
   ]},
-  {name:'Bennfoglalás', items:[
-    ["56 ÷ 7 = ?","8",["6","7","9"]],
-    ["72 ÷ 8 = ?","9",["6","8","12"]],
-    ["63 ÷ 9 = ?","7",["6","8","9"]],
-    ["45 ÷ 5 = ?","9",["7","8","10"]],
-    ["36 ÷ 4 = ?","9",["8","10","6"]],
-    ["18 ÷ 3 = ?","6",["5","7","8"]],
-    ["40 ÷ 10 = ?","4",["2","3","5"]],
-    ["24 ÷ 6 = ?","4",["2","3","5"]],
-    ["54 ÷ 6 = ?","9",["7","8","6"]],
-    ["42 ÷ 7 = ?","6",["4","5","7"]],
+  { name:"2. szoba – Bennfoglalás", bg:BG2, tasks:[
+    ["8÷2","4"],["12÷4","3"],["16÷4","4"],["20÷5","4"],["28÷7","4"],
+    ["30÷6","5"],["36÷9","4"],["18÷3","6"],["40÷8","5"],["24÷6","4"]
   ]},
-  {name:'Nyitott mondatok', items:[
-    ["4 × ☐ = 32 → mennyi a ☐?","8",["6","7","9"]],
-    ["☐ × 9 = 27 → mennyi a ☐?","3",["2","4","5"]],
-    ["7 × ☐ = 49 → mennyi a ☐?","7",["6","8","9"]],
-    ["☐ × 6 = 60 → mennyi a ☐?","10",["8","9","11"]],
-    ["5 × ☐ = 45 → mennyi a ☐?","9",["7","8","10"]],
-    ["☐ × 8 = 16 → mennyi a ☐?","2",["1","3","4"]],
-    ["3 × ☐ = 24 → mennyi a ☐?","8",["6","7","9"]],
-    ["☐ × 4 = 36 → mennyi a ☐?","9",["7","8","10"]],
-    ["2 × ☐ = 14 → mennyi a ☐?","7",["6","8","9"]],
-    ["☐ × 7 = 56 → mennyi a ☐?","8",["6","7","9"]],
+  { name:"3. szoba – Nyitott mondatok", bg:BG3, tasks:[
+    ["4×_ = 16","4"],["_×3 = 9","3"],["5×_ = 25","5"],["_÷4 = 2","8"],
+    ["_×2 = 10","5"],["12÷_ = 3","4"],["_×6 = 18","3"],["24÷_ = 4","6"],
+    ["3×_ = 15","5"],["_÷2 = 5","10"]
   ]}
 ];
 
-const COLORS = [
-  {cls:"red",    icon:"🔺"},
-  {cls:"blue",   icon:"🔷"},
-  {cls:"yellow", icon:"🟡"},
-  {cls:"green",  icon:"🟩"},
-];
+const $ = id => document.getElementById(id);
+const UI = { start:$("#start"), game:$("#game"), end:$("#end"),
+             roomTitle:$("#roomTitle"), q:$("#q"), a:$("#a"),
+             feedback:$("#feedback"), progress:$("#progress"),
+             song:$("#song"), bg:$("#bg") };
 
-/* ----------- ELEMEK ----------- */
-const $ = s=>document.querySelector(s);
-const UI = {
-  intro:$('#intro'), game:$('#game'), cheese:$('#cheeseScr'), over:$('#over'), sum:$('#summary'),
-  room:$('#room'), cheeseChip:$('#cheese'), lives:$('#lives'),
-  qnum:$('#qnum'), qtext:$('#qtext'), answers:$('#answers'), bar:$('#bar'), step:$('#step'),
-  cCount:$('#cCount'), start:$('#start'), nextRoom:$('#nextRoom'), restart:$('#restart'), again:$('#again'),
-  type1:$('#typeLine1'), type2:$('#typeLine2'), song:$('#song')
-};
+let roomIndex=0, taskIndex=0, cheese=0;
 
-/* ----------- ÁLLAPOT ----------- */
-let room=0, idx=0, life=3, cheese=0;
-
-/* ----------- SEGÉD ----------- */
-function show(view){ [UI.intro,UI.game,UI.cheese,UI.over,UI.sum].forEach(x=>x.style.display='none'); view.style.display='grid'; }
-function hearts(n){ return "❤️".repeat(n)+"🖤".repeat(3-n); }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
-function header(){ UI.room.textContent=`${room+1}/3 · ${ROOMS[room].name}`; UI.cheeseChip.textContent=cheese; UI.lives.textContent=hearts(life); }
-
-/* ----------- RENDER ----------- */
-function renderQ(){
-  const list = ROOMS[room].items;
-  const [q, ok, wrongs] = list[idx];
-  UI.qnum.textContent=`${idx+1}/${list.length}`;
-  UI.qtext.textContent=q;
-  UI.step.textContent=`${idx+1}/${list.length}`;
-  UI.bar.style.width = (idx/list.length*100)+"%";
-
-  const opts = shuffle([ok,...wrongs]).map(String);
-  UI.answers.innerHTML='';
-  opts.forEach((text,i)=>{
-    const b=document.createElement('button');
-    const style = COLORS[i%4];
-    b.className=`ans ${style.cls}`;
-    b.innerHTML = `<span class="icon">${style.icon}</span> ${text}`;
-    b.onclick=()=>{
-      if(text===String(ok)){
-        b.style.filter='brightness(1.05)';
-        setTimeout(next,240);
-      }else{
-        life--; header();
-        b.style.filter='grayscale(30%) brightness(.85)';
-        if(life<=0){ setTimeout(gameOver,200); }
-      }
-    };
-    UI.answers.appendChild(b);
-  });
+function startGame(){
+  UI.start.style.display="none";
+  UI.game.style.display="block";
+  roomIndex=0; taskIndex=0; cheese=0;
+  updateCheese();
+  setBg(rooms[roomIndex].bg);
+  render();
 }
 
-/* ----------- FOLYAM ----------- */
-function start(){ room=0; idx=0; life=3; cheese=0; header(); show(UI.game); renderQ(); }
-function next(){
-  const list = ROOMS[room].items;
-  idx++;
-  if(idx<list.length){ renderQ(); return; }
-  // pálya vége
-  cheese++; header();
-  if(cheese>=3){ endSequence(); }
-  else { $('#cCount').textContent = cheese; show(UI.cheese); }
-}
-function nextR(){ room++; idx=0; life=3; header(); show(UI.game); renderQ(); }
-function gameOver(){ show(UI.over); }
-function again(){ start(); }
+function setBg(src){ UI.bg.src = src; }
 
-/* ----------- ZÁRÁS: gépelős felirat + automatikus zene ----------- */
-function typewriter(el, text, speed=35){
-  el.textContent = '';
-  const cur = document.createElement('span');
-  cur.className = 'cursor';
-  el.appendChild(cur);
-  let i=0;
-  (function tick(){
-    if(i < text.length){
-      cur.before(document.createTextNode(text[i++]));
-      setTimeout(tick, speed);
+function render(){
+  const R = rooms[roomIndex];
+  UI.roomTitle.textContent = R.name;
+  UI.q.textContent = R.tasks[taskIndex][0];
+  UI.a.value = ""; UI.a.focus();
+  UI.feedback.textContent = "";
+  UI.progress.textContent = `Feladat: ${taskIndex+1}/10 · Szoba: ${roomIndex+1}/3`;
+}
+
+function check(){
+  const R = rooms[roomIndex];
+  const val = UI.a.value.trim();
+  const ok  = R.tasks[taskIndex][1];
+  if(val === ok){
+    UI.feedback.textContent = "✅ Helyes!";
+    taskIndex++;
+    if(taskIndex < R.tasks.length){
+      setTimeout(render, 500);
     } else {
-      cur.remove();
+      cheese++; updateCheese();
+      if(roomIndex < rooms.length-1){
+        alert(`Megszereztél egy sajtot! (${cheese}/3)`);
+        roomIndex++; taskIndex=0; setBg(rooms[roomIndex].bg); render();
+      } else {
+        finishGame();
+      }
     }
-  })();
+  } else {
+    UI.feedback.textContent = "❌ Próbáld újra!";
+  }
 }
-function endSequence(){
-  show(UI.sum);
-  typewriter(UI.type1, 'Megszerezted a sajtot! (3/3)');
-  setTimeout(()=>typewriter(UI.type2, 'Most már kiderül: sajtból van a Hold! 🌕'), 900);
 
-  // A játék során volt kattintás, ezért a legtöbb böngésző engedi az autoplay-t:
-  const tryPlay = ()=> UI.song.play().catch(()=>{ /* csendben újra próbálkozik */ });
+function updateCheese(){
+  $("#cheeses").textContent = "🧀".repeat(cheese) + "🧀".repeat(3-cheese);
+}
+
+function finishGame(){
+  UI.game.style.display="none";
+  UI.end.style.display="block";
+  UI.bg.src = END_BG;                       // záró háttér
+  UI.bg.style.animation = "glow 6s ease-in-out infinite alternate";
   UI.song.currentTime = 0;
-  tryPlay();
-  setTimeout(tryPlay, 500);
-  setTimeout(tryPlay, 1500);
+  const tryPlay = ()=> UI.song.play().catch(()=>{});
+  tryPlay(); setTimeout(tryPlay,400); setTimeout(tryPlay,1200);
 }
 
-/* ----------- ESEMÉNYEK ----------- */
-$('#start').addEventListener('click', start);
-$('#nextRoom').addEventListener('click', nextR);
-$('#restart').addEventListener('click', start);
-$('#again').addEventListener('click', again);
+function reset(){ location.reload(); }
+
+$("#startBtn").addEventListener("click", startGame);
+$("#checkBtn").addEventListener("click", check);
+$("#againBtn").addEventListener("click", reset);
+$("#a").addEventListener("keydown", e=>{ if(e.key==="Enter") check(); });
+
+// kezdő háttér
+setBg(BG1);
 </script>
 </body>
 </html>
